@@ -11,6 +11,8 @@ export interface CodeEditorProps {
   onChange: (value: string) => void;
   /** Ctrl/Cmd+Enter */
   onRun: () => void;
+  /** Ctrl/Cmd+Shift+Enter */
+  onSubmit: () => void;
   /** 1-based line to underline as the latest error, or null. */
   errorLine: number | null;
   /** Gives screen readers a name for the code box. */
@@ -30,15 +32,18 @@ export default function CodeEditor({
   language,
   onChange,
   onRun,
+  onSubmit,
   errorLine,
   label,
 }: CodeEditorProps) {
   const theme = useSettings((s) => s.theme);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const runRef = useRef(onRun);
+  const submitRef = useRef(onSubmit);
   useEffect(() => {
     runRef.current = onRun;
-  }, [onRun]);
+    submitRef.current = onSubmit;
+  }, [onRun, onSubmit]);
 
   // Wait a frame so the new data-theme attribute is on <html> before the colors are read.
   useEffect(() => {
@@ -72,6 +77,9 @@ export default function CodeEditor({
     editorRef.current = editor;
     applyAppTheme();
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => runRef.current());
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () =>
+      submitRef.current(),
+    );
   }, []);
 
   return (

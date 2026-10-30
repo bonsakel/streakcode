@@ -4,6 +4,8 @@ import { runtimeProgressText } from '@/features/copy/runtime';
 import type { RuntimeProgress } from '@/features/judge/protocol';
 import { STATUS_LABEL, STATUS_TINT, VERDICT_LABEL, VERDICT_TINT } from '@/features/judge/statusUi';
 import type { Language, TestResult, Verdict } from '@/features/judge/types';
+import { Mascot } from '@/features/mascot/Mascot';
+import { moodForVerdict } from '@/features/mascot/mood';
 
 export type RunMode = 'run' | 'submit';
 
@@ -15,6 +17,8 @@ interface ResultsPanelProps {
   running: boolean;
   progress: RuntimeProgress | null;
   failure: string | null;
+  /** Tone-aware line shown next to the mascot once a verdict is in. */
+  message: string | null;
 }
 
 function ResultRow({ result, delay }: { result: TestResult; delay: number }) {
@@ -73,13 +77,17 @@ export function ResultsPanel({
   running,
   progress,
   failure,
+  message,
 }: ResultsPanelProps) {
   if (!mode && !running) {
     return (
-      <p className="p-4 text-sm text-muted">
-        Hit <strong>Run</strong> to try the visible tests, or <strong>Submit</strong> to face the
-        hidden ones too. (Ctrl/⌘ + Enter runs.)
-      </p>
+      <div className="flex items-center gap-3 p-4">
+        <Mascot mood="idle" className="h-14 w-14 shrink-0" />
+        <p className="text-sm text-muted">
+          Hit <strong>Run</strong> to try the visible tests, or <strong>Submit</strong> to face the
+          hidden ones too. (Ctrl/⌘ + Enter runs, Ctrl/⌘ + Shift + Enter submits.)
+        </p>
+      </div>
     );
   }
   return (
@@ -94,15 +102,26 @@ export function ResultsPanel({
           Judging... {results.length} test{results.length === 1 ? '' : 's'} in.
         </p>
       )}
-      {verdict && (
-        <div className="flex flex-wrap items-center gap-3">
-          <Badge tint={VERDICT_TINT[verdict.kind]} className="px-3 py-1 text-base">
-            {VERDICT_LABEL[verdict.kind]}
-          </Badge>
-          <span className="font-mono text-sm text-muted">
-            {verdict.passed}/{verdict.total} passed
-            {mode === 'run' ? ' (visible tests only)' : ''}
-          </span>
+      {(verdict || running) && (
+        <div className="flex items-center gap-3">
+          <Mascot
+            mood={moodForVerdict(verdict?.kind ?? null, running)}
+            className="h-14 w-14 shrink-0"
+          />
+          {verdict && (
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <Badge tint={VERDICT_TINT[verdict.kind]} className="px-3 py-1 text-base">
+                  {VERDICT_LABEL[verdict.kind]}
+                </Badge>
+                <span className="font-mono text-sm text-muted">
+                  {verdict.passed}/{verdict.total} passed
+                  {mode === 'run' ? ' (visible tests only)' : ''}
+                </span>
+              </div>
+              {message && <p className="text-sm font-semibold">{message}</p>}
+            </div>
+          )}
         </div>
       )}
       {failure && (

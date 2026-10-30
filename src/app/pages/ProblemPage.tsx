@@ -5,6 +5,12 @@ import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Tabs } from '@/components/Tabs';
 import { toast } from '@/components/toastStore';
+import { isEmptyFunction, nextTleStreak, TLE_STREAK_LENGTH } from '@/features/copy/easterEggs';
+import { pickMessage, type MessageKey } from '@/features/copy/verdicts';
+import { celebrate } from '@/features/effects/confetti';
+import { playSound, soundForVerdict } from '@/features/effects/sound';
+import { Mascot } from '@/features/mascot/Mascot';
+import { useSettings } from '@/store/settings';
 import { VERDICT_LABEL } from '@/features/judge/statusUi';
 import type { Language } from '@/features/judge/types';
 import { getProblemMeta, loadProblem } from '@/features/problems';
@@ -62,13 +68,38 @@ function Workbench({ problem }: { problem: Problem }) {
     () => useWorkspace.getState().drafts[draftKey(slug, language)] ?? problem.starters[language],
   );
   const [panelOpen, setPanelOpen] = useState(true);
+  const [message, setMessage] = useState<string | null>(null);
+  const tleStreak = useRef(0);
+  const lastMessage = useRef<string | undefined>(undefined);
   const draftTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const { state, start, reset } = useJudgeRun(
     problem,
     ({ mode, language: lang, code: src, verdict }) => {
-      if (mode !== 'submit') return;
+      tleStreak.current = nextTleStreak(tleStreak.current, verdict.kind);
       const wasSolved = useProgress.getState().solved[slug] !== undefined;
+      const firstSolve = mode === 'submit' && verdict.kind === 'accepted' && !wasSolved;
+
+      let key: MessageKey = verdict.kind;
+      if (verdict.kind !== 'accepted' && isEmptyFunction(src, lang)) key = 'empty_function';
+      else if (tleStreak.current >= TLE_STREAK_LENGTH) key = 'tle_streak';
+      else if (firstSolve) key = 'first_solve';
+      if (key === 'tle_streak') tleStreak.current = 0;
+
+      const { tone, handle } = useSettings.getState();
+      const next = pickMessage(
+        tone,
+        key,
+        { passed: verdict.passed, total: verdict.total, handle },
+        Math.random,
+        lastMessage.current,
+      );
+      lastMessage.current = next;
+      setMessage(next);
+      playSound(soundForVerdict(verdict.kind));
+      if (verdict.kind === 'accepted') void celebrate();
+
+      if (mode !== 'submit') return;
       recordSubmission(slug, {
         language: lang,
         verdict: verdict.kind,
@@ -77,9 +108,7 @@ function Workbench({ problem }: { problem: Problem }) {
         maxTimeMs: verdict.maxTimeMs,
         code: src,
       });
-      if (verdict.kind === 'accepted' && !wasSolved) {
-        toast('Accepted! Editorial unlocked. 🎉', 'success');
-      }
+      if (firstSolve) toast('Accepted! Editorial unlocked. 🎉', 'success');
     },
   );
 
@@ -111,12 +140,16 @@ function Workbench({ problem }: { problem: Problem }) {
 
   useEffect(() => () => clearTimeout(draftTimer.current), []);
 
-  const run = (mode: RunMode) => void start(mode, language, code);
+  const run = (mode: RunMode) => {
+    playSound('run');
+    void start(mode, language, code);
+  };
   const runRef = useRef(run);
   useEffect(() => {
     runRef.current = run;
   });
   const onShortcut = useCallback(() => runRef.current('run'), []);
+  const onSubmitShortcut = useCallback(() => runRef.current('submit'), []);
 
   const resetCode = () => {
     if (!window.confirm('Reset to the starter code? Your current code will be lost.')) return;
@@ -177,6 +210,7 @@ function Workbench({ problem }: { problem: Problem }) {
               language={language}
               onChange={onCode}
               onRun={onShortcut}
+              onSubmit={onSubmitShortcut}
               errorLine={errorLine}
               label={`${problem.title} solution`}
             />
@@ -203,6 +237,7 @@ function Workbench({ problem }: { problem: Problem }) {
               running={state.running}
               progress={state.progress}
               failure={state.failure}
+              message={message}
             />
           </div>
         )}
@@ -230,7 +265,13 @@ function ProblemLoader({ slug }: { slug: string }) {
   if (failed) {
     return <p role="alert">Couldn't load this problem. Check your connection and refresh.</p>;
   }
-  if (!problem) return <p className="text-muted">Loading the problem...</p>;
+  if (!problem)
+    return (
+      <div className="flex items-center gap-3 text-muted">
+        <Mascot mood="thinking" className="h-12 w-12" />
+        <p>Fetching the problem... plotting something.</p>
+      </div>
+    );
   return <Workbench problem={problem} />;
 }
 

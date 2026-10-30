@@ -70,3 +70,12 @@ Ambiguities in `PROJECT_SPEC.md` and how they were resolved (simplest option tha
 - **Editorial is locked until solved.** Hints reveal one at a time and the count is stored, so Phase 7 can use `hintsUsed` and `failedBefore` for XP.
 - **Solved state lives in `useProgress`.** XP, levels and streaks are Phase 7; verdict tone copy, mascot and confetti are Phase 6.
 - **Results reveal** is staggered (80 ms per row, capped) and respects reduced motion.
+
+## Phase 6: Personality
+
+- Mascot is "Blobert", an original SVG blob (5 moods) coloured by the theme accent.
+- Verdict copy lives in `src/features/copy/verdicts.ts`: per-tone pools with `{passed}`, `{total}`, `{handle}` placeholders. Rule: roast the code, never the person. Professional tone is plain and emoji-free.
+- Sounds are synthesised with Web Audio (no audio files), quiet, and off by default.
+- `canvas-confetti` (ISC) is lazy-loaded; skipped for reduced motion and the Professional tone.
+- Easter eggs: empty-function roast (submitting a placeholder body), and 5 consecutive TLEs gives an "are you okay?" message (session-only counter). Konami was done in Phase 1.
+- Ctrl/Cmd+Shift+Enter submits from the editor (Ctrl/Cmd+Enter still runs).
