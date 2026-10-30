@@ -1,3 +1,4 @@
+import { usePalette } from '@/features/palette/paletteStore';
 import Editor, { type OnMount } from '@monaco-editor/react';
 import { useCallback, useEffect, useRef } from 'react';
 import type { Language } from '@/features/judge/types';
@@ -76,6 +77,10 @@ export default function CodeEditor({
   const onMount: OnMount = useCallback((editor) => {
     editorRef.current = editor;
     applyAppTheme();
+    // Monaco claims Ctrl/Cmd+K as a chord prefix, so forward it to the app's palette.
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK, () =>
+      usePalette.getState().toggle(),
+    );
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => runRef.current());
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () =>
       submitRef.current(),

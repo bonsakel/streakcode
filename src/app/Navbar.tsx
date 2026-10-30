@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 import { cn } from '@/components/cn';
 import { NAV_LINKS } from './navLinks';
+import { usePalette } from '@/features/palette/paletteStore';
 import { SettingsMenu } from './SettingsMenu';
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -13,6 +14,7 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const openPalette = usePalette((s) => s.setOpen);
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur">
       <nav aria-label="Main" className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4">
@@ -36,6 +38,16 @@ export function Navbar() {
         </div>
 
         <div className="ml-auto flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => openPalette(true)}
+            aria-label="Open command palette"
+            aria-keyshortcuts="Control+K Meta+K"
+            className="hidden items-center gap-2 rounded-lg border border-line px-3 py-1.5 text-sm text-muted hover:border-accent/60 hover:text-ink sm:flex"
+          >
+            Search
+            <kbd className="rounded bg-raised px-1.5 font-mono text-xs">Ctrl K</kbd>
+          </button>
           <SettingsMenu />
           <button
             type="button"

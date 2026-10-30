@@ -90,3 +90,12 @@ Ambiguities in `PROJECT_SPEC.md` and how they were resolved (simplest option tha
 - **Storage:** progress store is v2 (migration computes XP and activity from v1 solves). Export is a validated JSON file; import validates with zod before touching state, so a bad file cannot corrupt progress. Reset asks for confirmation.
 - **Fix:** the generated handle was not persisted until a setting changed, so it changed on every reload. It is now written on first load.
 - Run reactions (message, sound, confetti, rewards toasts) moved into `useRunReaction`, which also keeps `ProblemPage` under the size limit.
+
+## Phase 8: Boss Fight, sharing, command palette
+
+- **Boss:** "Sir Spaghetti Code". Each run draws one easy, one medium and one hard problem at random (nearest difficulty if one is missing), 30-minute clock, +150 XP on a win. Taunts exist per tone; Professional is plain.
+- **Persistence:** the run lives in the persisted boss store with an absolute `endsAt`, so reloading cannot pause the clock. A run that expires while the tab is closed is settled as a loss on next load. The win bonus and tally are applied exactly once.
+- **Reuse:** `Workbench` and `ProblemLoader` were extracted from `ProblemPage`; the boss page embeds them and listens to `onSubmitted`. Run (not Submit) never advances the boss.
+- **Share card:** a 1200x630 PNG drawn locally on a canvas in the active theme colors. Copy link only shares the problem URL; no progress data is embedded.
+- **Palette:** custom combobox (no new dependency). Ctrl/Cmd+K is bound on `window` and forwarded from Monaco's own Cmd/Ctrl+K binding.
+- **Tests:** `@testing-library/user-event` was not added; tests use `fireEvent`. Canvas rendering is verified in the browser only (jsdom has no canvas).

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Badge } from '@/components/Badge';
+import { Button } from '@/components/Button';
 import { runtimeProgressText } from '@/features/copy/runtime';
 import type { RuntimeProgress } from '@/features/judge/protocol';
 import { STATUS_LABEL, STATUS_TINT, VERDICT_LABEL, VERDICT_TINT } from '@/features/judge/statusUi';
@@ -19,6 +20,8 @@ interface ResultsPanelProps {
   failure: string | null;
   /** Tone-aware line shown next to the mascot once a verdict is in. */
   message: string | null;
+  /** Offered after an accepted submission. */
+  onShare?: () => void;
 }
 
 function ResultRow({ result, delay }: { result: TestResult; delay: number }) {
@@ -78,6 +81,7 @@ export function ResultsPanel({
   progress,
   failure,
   message,
+  onShare,
 }: ResultsPanelProps) {
   if (!mode && !running) {
     return (
@@ -120,6 +124,11 @@ export function ResultsPanel({
                 </span>
               </div>
               {message && <p className="text-sm font-semibold">{message}</p>}
+              {onShare && mode === 'submit' && verdict.kind === 'accepted' && (
+                <Button size="sm" variant="secondary" onClick={onShare}>
+                  📸 Share result
+                </Button>
+              )}
             </div>
           )}
         </div>

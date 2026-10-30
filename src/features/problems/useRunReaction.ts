@@ -5,12 +5,16 @@ import { pickMessage, type MessageKey } from '@/features/copy/verdicts';
 import { celebrate } from '@/features/effects/confetti';
 import { playSound, soundForVerdict } from '@/features/effects/sound';
 import { ACHIEVEMENT_BY_ID } from '@/features/gamification/achievements';
+import type { VerdictKind } from '@/features/judge/types';
 import type { Finished } from '@/features/problems/useJudgeRun';
 import { useProgress } from '@/store/progress';
 import { useSettings } from '@/store/settings';
 
 /** Everything that happens after a run: tone message, sound, confetti, scoring and rewards toasts. */
-export function useRunReaction(slug: string) {
+export function useRunReaction(
+  slug: string,
+  onSubmitted?: (slug: string, verdict: VerdictKind) => void,
+) {
   const [message, setMessage] = useState<string | null>(null);
   const tleStreak = useRef(0);
   const lastMessage = useRef<string | undefined>(undefined);
@@ -48,6 +52,8 @@ export function useRunReaction(slug: string) {
       maxTimeMs: verdict.maxTimeMs,
       code,
     });
+
+    onSubmitted?.(slug, verdict.kind);
 
     if (outcome.xp) {
       const { hintPenalty, firstTry, speed } = outcome.xp;

@@ -77,6 +77,8 @@ interface ProgressState extends ProgressData {
     now?: Date,
   ) => SubmissionOutcome;
   revealHint: (slug: string, total: number) => void;
+  /** Extra XP that is not tied to a problem (daily and boss bonuses). */
+  awardBonus: (xp: number) => void;
   replaceAll: (data: ProgressData) => void;
   reset: () => void;
 }
@@ -218,6 +220,8 @@ export const useProgress = create<ProgressState>()(
             [slug]: Math.min(total, (s.hintsRevealed[slug] ?? 0) + 1),
           },
         })),
+
+      awardBonus: (xp) => set((s) => ({ bonusXp: s.bonusXp + Math.max(0, Math.floor(xp)) })),
 
       replaceAll: (data) => set(withEarnedAchievements({ ...emptyProgress(), ...data })),
       reset: () => set(emptyProgress()),

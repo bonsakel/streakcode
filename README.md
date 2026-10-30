@@ -34,3 +34,9 @@ The code editor is [Monaco](https://microsoft.github.io/monaco-editor/), bundled
 ## Progress, XP and streaks
 
 Everything is local. Solve problems to earn XP, level up (NPC to Certified Menace), keep a daily streak (a freeze token every 7 days), and unlock 25 achievements. `/profile` has your heatmap and stats, plus export/import so you can back up or move your progress. `/daily` serves one deterministic problem per day.
+
+## Boss Fight, sharing and the command palette
+
+- `/boss`: beat three escalating problems in 30 minutes to defeat Sir Spaghetti Code (+150 XP).
+- After an accepted Submit, **Share result** makes a PNG card on your device (download it or copy the problem link).
+- Press **Ctrl/Cmd+K** anywhere (even in the editor) to jump to a problem, switch theme or tone, or toggle sound.

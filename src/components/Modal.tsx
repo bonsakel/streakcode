@@ -6,12 +6,14 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
+  /** Wider panel for previews and lists. */
+  wide?: boolean;
 }
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])';
 
-export function Modal({ open, onClose, title, children }: ModalProps) {
+export function Modal({ open, onClose, title, children, wide = false }: ModalProps) {
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
 
@@ -58,7 +60,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-glow"
+        className={`relative w-full ${wide ? 'max-w-2xl' : 'max-w-md'} rounded-2xl border border-line bg-surface p-6 shadow-glow`}
       >
         <h2 id={titleId} className="mb-3 text-xl">
           {title}
