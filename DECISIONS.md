@@ -57,3 +57,16 @@ Ambiguities in `PROJECT_SPEC.md` and how they were resolved (simplest option tha
 - **XP:** easy 50-60, medium 120-130, hard 250. Tunable later without touching code.
 - **`problems/` is excluded from ESLint** (it is sample code for users, with intentionally unused parameters) but still formatted by Prettier, except `tests.json`.
 - **`validate-problems` runs under `tsx`** so it can import the real judge sources; `tsx` is a devDependency.
+
+## Phase 5: Problem UI
+
+- **Monaco is self-hosted and curated.** `@monaco-editor/react` loads Monaco from jsdelivr by default, which would break "no external requests". `src/features/editor/monacoSetup.ts` hands it a bundled `monaco-editor` (`loader.config({ monaco })`) built from `editor.api` plus only the features a judge editor needs (find, comments, folding, multi-cursor, line operations, bracket matching, suggest) and syntax highlighting for JS/TS/Python. Only the base editor worker is bundled: no TypeScript language service (several MB), so there are no red squiggles from Monaco; the judge reports errors, and the failing line is underlined. The editor is a lazy chunk (about 3.4 MB, 870 KB gzipped) fetched only on problem pages, far below any static host's per-file limit.
+- **Editor theme follows the app theme.** `buildMonacoTheme` (pure, unit tested) maps the CSS-variable tokens to a Monaco theme and is re-applied on theme change.
+- **`react-markdown` renders statements, hints and editorials.** A small addition beyond the listed stack; it ignores raw HTML, so problem content cannot inject markup.
+- **`overrides.dompurify` in `package.json`.** Monaco bundles a dompurify with known advisories; the override keeps `npm audit` at 0 vulnerabilities.
+- **Custom split pane**, no library: pointer drag, keyboard arrows (Shift for bigger steps, Home/End), `role="separator"`, persisted in the workspace store. It stacks vertically below `lg`.
+- **Run vs Submit.** Run executes visible tests only and records nothing. Submit executes every test, records a submission (newest first, capped at 25 per problem) and marks the problem solved on the first Accepted. Hidden tests show only pass/fail and a "Hidden test #N" label. Ctrl/Cmd+Enter runs.
+- **Drafts** are saved per problem and language (debounced 300 ms) in localStorage. Reset code asks for confirmation.
+- **Editorial is locked until solved.** Hints reveal one at a time and the count is stored, so Phase 7 can use `hintsUsed` and `failedBefore` for XP.
+- **Solved state lives in `useProgress`.** XP, levels and streaks are Phase 7; verdict tone copy, mascot and confetti are Phase 6.
+- **Results reveal** is staggered (80 ms per row, capped) and respects reduced motion.

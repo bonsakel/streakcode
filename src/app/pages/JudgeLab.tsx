@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import { Badge, type Tint } from '@/components/Badge';
+import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { runtimeProgressText } from '@/features/copy/runtime';
 import { getJudge } from '@/features/judge/browserJudge';
 import type { RuntimeProgress } from '@/features/judge/protocol';
-import type { Language, TestCase, TestResult, TestStatus, Verdict } from '@/features/judge/types';
+import { STATUS_LABEL, STATUS_TINT } from '@/features/judge/statusUi';
+import type { Language, TestCase, TestResult, Verdict } from '@/features/judge/types';
 import { computeVerdict } from '@/features/judge/verdict';
 
 type LabLanguage = Language;
@@ -38,24 +39,6 @@ const LOOP: Record<LabLanguage, string> = {
   javascript: 'function add(a, b) {\n  while (true) {}\n}\n',
   typescript: 'function add(a: number, b: number): number {\n  while (true) {}\n}\n',
   python: 'def add(a, b):\n    while True:\n        pass\n',
-};
-
-const STATUS_TINT: Record<TestStatus, Tint> = {
-  passed: 'ok',
-  wrong_answer: 'bad',
-  runtime_error: 'bad',
-  compile_error: 'bad',
-  time_limit_exceeded: 'warn',
-  skipped: 'neutral',
-};
-
-const STATUS_LABEL: Record<TestStatus, string> = {
-  passed: 'Passed',
-  wrong_answer: 'Wrong answer',
-  runtime_error: 'Runtime error',
-  compile_error: 'Compile error',
-  time_limit_exceeded: 'Time limit exceeded',
-  skipped: 'Skipped',
 };
 
 function ResultRow({ result }: { result: TestResult }) {

@@ -11,7 +11,8 @@ describe('routing shell', () => {
   it.each([
     ['/', /un-cook yourself/i],
     ['/problems', /problems/i],
-    ['/problem/rizz-calculator', /rizz-calculator/i],
+    ['/problem/rizz-calculator', /rizz calculator/i],
+    ['/problem/not-a-real-one', /no problem called/i],
     ['/daily', /daily challenge/i],
     ['/boss', /boss fight/i],
     ['/profile', /profile/i],

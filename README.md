@@ -26,3 +26,7 @@ Python runs via [Pyodide](https://pyodide.org) (self-hosted, about 12 MB, downlo
 ## Problems
 
 Problems live in [`problems/`](problems/README.md). `npm run validate-problems` checks every problem's schema, runs each reference solution in JavaScript, TypeScript and Python through the real judge, and makes sure the starters fail cleanly. CI runs it on every push.
+
+## Editor
+
+The code editor is [Monaco](https://microsoft.github.io/monaco-editor/), bundled and served from your own origin (nothing loads from a CDN). It is lazy-loaded, so only problem pages download it. Drafts are saved in your browser per problem and language.

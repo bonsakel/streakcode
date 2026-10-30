@@ -11,6 +11,8 @@ const pyodideVersion = (
 export default defineConfig({
   plugins: [react()],
   define: { __PYODIDE_DIR__: JSON.stringify(`pyodide-${pyodideVersion}`) },
+  // The lazily loaded editor chunk (Monaco) is intentionally large; see DECISIONS.md.
+  build: { chunkSizeWarningLimit: 4000 },
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   test: {
     environment: 'jsdom',
