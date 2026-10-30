@@ -24,7 +24,7 @@ const IDLE: RunState = {
   failure: null,
 };
 
-interface Finished {
+export interface Finished {
   mode: RunMode;
   language: Language;
   code: string;

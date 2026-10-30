@@ -31,3 +31,6 @@ export const useSettings = create<SettingsState>()(
     { name: 'skill-issue:settings', version: 1 },
   ),
 );
+
+// zustand only writes on change; persist the generated handle right away so it is stable across reloads.
+useSettings.setState({ handle: useSettings.getState().handle });

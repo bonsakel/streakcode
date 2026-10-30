@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { useSettings } from './settings';
 
 describe('settings store', () => {
@@ -23,5 +24,17 @@ describe('settings store', () => {
   it('persists to localStorage under a namespaced key', () => {
     useSettings.getState().setTone('professional');
     expect(localStorage.getItem('skill-issue:settings')).toContain('professional');
+  });
+});
+
+describe('handle persistence', () => {
+  it('writes the generated handle to storage on first load', async () => {
+    localStorage.clear();
+    vi.resetModules();
+    const { useSettings: fresh } = await import('./settings');
+    const stored = JSON.parse(localStorage.getItem('skill-issue:settings') ?? '{}') as {
+      state?: { handle?: string };
+    };
+    expect(stored.state?.handle).toBe(fresh.getState().handle);
   });
 });

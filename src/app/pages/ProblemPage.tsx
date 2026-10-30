@@ -4,25 +4,21 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Tabs } from '@/components/Tabs';
-import { toast } from '@/components/toastStore';
-import { isEmptyFunction, nextTleStreak, TLE_STREAK_LENGTH } from '@/features/copy/easterEggs';
-import { pickMessage, type MessageKey } from '@/features/copy/verdicts';
-import { celebrate } from '@/features/effects/confetti';
-import { playSound, soundForVerdict } from '@/features/effects/sound';
+import { playSound } from '@/features/effects/sound';
 import { Mascot } from '@/features/mascot/Mascot';
-import { useSettings } from '@/store/settings';
 import { VERDICT_LABEL } from '@/features/judge/statusUi';
 import type { Language } from '@/features/judge/types';
 import { getProblemMeta, loadProblem } from '@/features/problems';
 import type { Problem } from '@/features/problems/parseProblem';
 import { useJudgeRun } from '@/features/problems/useJudgeRun';
+import { useRunReaction } from '@/features/problems/useRunReaction';
+import { useProgress } from '@/store/progress';
 import { EditorToolbar } from '@/features/problems/ui/EditorToolbar';
 import { HintsPanel } from '@/features/problems/ui/HintsPanel';
 import { Markdown } from '@/features/problems/ui/Markdown';
 import { ResultsPanel, type RunMode } from '@/features/problems/ui/ResultsPanel';
 import { EditorialPanel, SubmissionsPanel } from '@/features/problems/ui/SidePanels';
 import { SplitPane } from '@/features/problems/ui/SplitPane';
-import { useProgress } from '@/store/progress';
 import { draftKey, useWorkspace } from '@/store/workspace';
 
 const CodeEditor = lazy(() => import('@/features/editor/CodeEditor'));
@@ -60,7 +56,6 @@ function Workbench({ problem }: { problem: Problem }) {
   const setSplitPct = useWorkspace((s) => s.setSplitPct);
   const setDraft = useWorkspace((s) => s.setDraft);
   const clearDraft = useWorkspace((s) => s.clearDraft);
-  const recordSubmission = useProgress((s) => s.recordSubmission);
   const solved = useProgress((s) => Boolean(s.solved[slug]));
 
   const [tab, setTab] = useState('statement');
@@ -68,49 +63,10 @@ function Workbench({ problem }: { problem: Problem }) {
     () => useWorkspace.getState().drafts[draftKey(slug, language)] ?? problem.starters[language],
   );
   const [panelOpen, setPanelOpen] = useState(true);
-  const [message, setMessage] = useState<string | null>(null);
-  const tleStreak = useRef(0);
-  const lastMessage = useRef<string | undefined>(undefined);
   const draftTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const { state, start, reset } = useJudgeRun(
-    problem,
-    ({ mode, language: lang, code: src, verdict }) => {
-      tleStreak.current = nextTleStreak(tleStreak.current, verdict.kind);
-      const wasSolved = useProgress.getState().solved[slug] !== undefined;
-      const firstSolve = mode === 'submit' && verdict.kind === 'accepted' && !wasSolved;
-
-      let key: MessageKey = verdict.kind;
-      if (verdict.kind !== 'accepted' && isEmptyFunction(src, lang)) key = 'empty_function';
-      else if (tleStreak.current >= TLE_STREAK_LENGTH) key = 'tle_streak';
-      else if (firstSolve) key = 'first_solve';
-      if (key === 'tle_streak') tleStreak.current = 0;
-
-      const { tone, handle } = useSettings.getState();
-      const next = pickMessage(
-        tone,
-        key,
-        { passed: verdict.passed, total: verdict.total, handle },
-        Math.random,
-        lastMessage.current,
-      );
-      lastMessage.current = next;
-      setMessage(next);
-      playSound(soundForVerdict(verdict.kind));
-      if (verdict.kind === 'accepted') void celebrate();
-
-      if (mode !== 'submit') return;
-      recordSubmission(slug, {
-        language: lang,
-        verdict: verdict.kind,
-        passed: verdict.passed,
-        total: verdict.total,
-        maxTimeMs: verdict.maxTimeMs,
-        code: src,
-      });
-      if (firstSolve) toast('Accepted! Editorial unlocked. 🎉', 'success');
-    },
-  );
+  const { message, onFinished } = useRunReaction(slug);
+  const { state, start, reset } = useJudgeRun(problem, onFinished);
 
   const errorLine = useMemo(
     () => state.results.find((r) => r.error?.line !== undefined)?.error?.line ?? null,

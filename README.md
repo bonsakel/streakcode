@@ -30,3 +30,7 @@ Problems live in [`problems/`](problems/README.md). `npm run validate-problems` 
 ## Editor
 
 The code editor is [Monaco](https://microsoft.github.io/monaco-editor/), bundled and served from your own origin (nothing loads from a CDN). It is lazy-loaded, so only problem pages download it. Drafts are saved in your browser per problem and language.
+
+## Progress, XP and streaks
+
+Everything is local. Solve problems to earn XP, level up (NPC to Certified Menace), keep a daily streak (a freeze token every 7 days), and unlock 25 achievements. `/profile` has your heatmap and stats, plus export/import so you can back up or move your progress. `/daily` serves one deterministic problem per day.

@@ -79,3 +79,14 @@ Ambiguities in `PROJECT_SPEC.md` and how they were resolved (simplest option tha
 - `canvas-confetti` (ISC) is lazy-loaded; skipped for reduced motion and the Professional tone.
 - Easter eggs: empty-function roast (submitting a placeholder body), and 5 consecutive TLEs gives an "are you okay?" message (session-only counter). Konami was done in Phase 1.
 - Ctrl/Cmd+Shift+Enter submits from the editor (Ctrl/Cmd+Enter still runs).
+
+## Phase 7: Gamification
+
+- **XP:** solve XP is awarded once per problem on the first accepted submission. Hints cost 15% of base each (never below 40% of base); first try (no failed submissions) is +25%; speed (slowest test under 10% of the time limit) is +10%. Speed uses runtime, not wall-clock solve time, because the app does not track time-on-problem.
+- **Levels:** 0 / 100 / 300 / 700 / 1400 / 2400 XP for NPC through Certified Menace. Tuned so the 24-problem launch set can reach the top.
+- **Streaks:** a "day" is the user's local calendar day; any accepted submission counts. A freeze token is banked every 7 streak days (max 3) and is spent automatically to bridge missed days. The streak is replayed from the activity log, so there is no separate streak state to corrupt.
+- **Daily challenge:** `dailySlug` hashes the local date (FNV-1a) over the sorted slugs, so no server is needed. Completing it pays 25 XP + 5 per streak day (capped at 7 days). Adding problems changes the future daily pick; that is accepted.
+- **Achievements:** 25, defined as pure `check` functions in `gamification/achievements.ts`. They are also granted retroactively after a store migration or import.
+- **Storage:** progress store is v2 (migration computes XP and activity from v1 solves). Export is a validated JSON file; import validates with zod before touching state, so a bad file cannot corrupt progress. Reset asks for confirmation.
+- **Fix:** the generated handle was not persisted until a setting changed, so it changed on every reload. It is now written on first load.
+- Run reactions (message, sound, confetti, rewards toasts) moved into `useRunReaction`, which also keeps `ProblemPage` under the size limit.

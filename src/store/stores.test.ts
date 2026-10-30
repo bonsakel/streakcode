@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { MAX_SUBMISSIONS_PER_PROBLEM, useProgress } from './progress';
+import { dailySlug } from '@/features/gamification/daily';
+import { dayKey } from '@/features/gamification/dates';
+import { listProblems } from '@/features/problems';
+import { MAX_SUBMISSIONS_PER_PROBLEM, streakOf, totalXp, useProgress } from './progress';
 import { draftKey, MAX_SPLIT, MIN_SPLIT, useWorkspace } from './workspace';
 
 const sub = (verdict: 'accepted' | 'wrong_answer' = 'wrong_answer') => ({
@@ -13,7 +16,7 @@ const sub = (verdict: 'accepted' | 'wrong_answer' = 'wrong_answer') => ({
 
 beforeEach(() => {
   localStorage.clear();
-  useProgress.setState({ submissions: {}, solved: {}, failedAttempts: {}, hintsRevealed: {} });
+  useProgress.getState().reset();
   useWorkspace.setState({ drafts: {}, language: 'javascript', splitPct: 42 });
 });
 
@@ -51,6 +54,60 @@ describe('progress store', () => {
     const { revealHint } = useProgress.getState();
     for (let i = 0; i < 6; i++) revealHint('p', 3);
     expect(useProgress.getState().hintsRevealed['p']).toBe(3);
+  });
+});
+
+describe('progress rewards', () => {
+  const real = listProblems()[0]!;
+  const noon = new Date(2026, 5, 3, 12, 0);
+
+  it('awards xp, first blood and activity on the first solve only', () => {
+    const { recordSubmission } = useProgress.getState();
+    const out = recordSubmission(real.slug, sub('accepted'), noon);
+    expect(out.xp?.total).toBeGreaterThanOrEqual(real.xp);
+    expect(out.newAchievements).toContain('first-blood');
+    expect(totalXp(useProgress.getState())).toBeGreaterThan(0);
+    expect(useProgress.getState().activity[dayKey(noon)]).toBe(1);
+
+    const again = recordSubmission(real.slug, sub('accepted'), noon);
+    expect(again.xp).toBeNull();
+    expect(again.newAchievements).not.toContain('first-blood');
+  });
+
+  it('does not reward failures but stores the attempt', () => {
+    const out = useProgress.getState().recordSubmission(real.slug, sub(), noon);
+    expect(out).toMatchObject({ xp: null, dailyBonus: 0, newAchievements: [], levelUp: null });
+    expect(useProgress.getState().activity).toEqual({});
+  });
+
+  it('pays the daily bonus once, only for the daily problem', () => {
+    const slugs = listProblems().map((p) => p.slug);
+    const daily = dailySlug(dayKey(noon), slugs)!;
+    const { recordSubmission } = useProgress.getState();
+    const first = recordSubmission(daily, sub('accepted'), noon);
+    expect(first.dailyBonus).toBeGreaterThan(0);
+    expect(useProgress.getState().dailyDone[dayKey(noon)]).toBe(daily);
+    expect(recordSubmission(daily, sub('accepted'), noon).dailyBonus).toBe(0);
+  });
+
+  it('builds a streak from consecutive days', () => {
+    const { recordSubmission } = useProgress.getState();
+    for (const d of [1, 2, 3])
+      recordSubmission(real.slug, sub('accepted'), new Date(2026, 5, d, 12));
+    expect(streakOf(useProgress.getState(), new Date(2026, 5, 3, 20)).current).toBe(3);
+  });
+
+  it('reports level ups', () => {
+    const big = listProblems().reduce((a, b) => (b.xp > a.xp ? b : a));
+    const out = useProgress.getState().recordSubmission(big.slug, sub('accepted'), noon);
+    expect(out.levelUp?.index).toBeGreaterThan(0);
+  });
+
+  it('reset clears everything', () => {
+    useProgress.getState().recordSubmission(real.slug, sub('accepted'), noon);
+    useProgress.getState().reset();
+    expect(useProgress.getState().solved).toEqual({});
+    expect(useProgress.getState().achievements).toEqual({});
   });
 });
 
