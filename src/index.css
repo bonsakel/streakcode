@@ -1,0 +1,140 @@
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/jetbrains-mono';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens are space-separated RGB triplets so Tailwind opacity modifiers work. */
+:root,
+[data-theme='midnight'] {
+  color-scheme: dark;
+  --c-bg: 12 13 22;
+  --c-surface: 20 22 36;
+  --c-raised: 30 33 52;
+  --c-line: 52 56 84;
+  --c-ink: 238 240 252;
+  --c-muted: 160 166 196;
+  --c-accent: 139 124 255;
+  --c-accent-fg: 12 13 22;
+  --c-pop: 255 122 182;
+  --c-ok: 74 222 128;
+  --c-bad: 255 107 107;
+  --c-warn: 252 196 25;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --c-bg: 249 248 252;
+  --c-surface: 255 255 255;
+  --c-raised: 240 238 248;
+  --c-line: 214 210 232;
+  --c-ink: 27 25 46;
+  --c-muted: 92 88 120;
+  --c-accent: 91 67 214;
+  --c-accent-fg: 255 255 255;
+  --c-pop: 202 31 120;
+  --c-ok: 18 128 66;
+  --c-bad: 200 40 40;
+  --c-warn: 150 100 0;
+}
+
+[data-theme='neon'] {
+  color-scheme: dark;
+  --c-bg: 5 5 12;
+  --c-surface: 12 10 26;
+  --c-raised: 22 18 44;
+  --c-line: 60 40 110;
+  --c-ink: 240 245 255;
+  --c-muted: 165 170 210;
+  --c-accent: 0 240 255;
+  --c-accent-fg: 5 5 12;
+  --c-pop: 255 46 196;
+  --c-ok: 57 255 140;
+  --c-bad: 255 70 90;
+  --c-warn: 255 230 0;
+}
+
+[data-theme='grass'] {
+  color-scheme: dark;
+  --c-bg: 10 20 14;
+  --c-surface: 16 30 22;
+  --c-raised: 24 44 32;
+  --c-line: 48 82 60;
+  --c-ink: 234 247 238;
+  --c-muted: 156 190 168;
+  --c-accent: 120 220 120;
+  --c-accent-fg: 10 20 14;
+  --c-pop: 255 200 87;
+  --c-ok: 120 230 140;
+  --c-bad: 255 120 110;
+  --c-warn: 255 200 87;
+}
+
+[data-theme='sunset'] {
+  color-scheme: dark;
+  --c-bg: 26 12 24;
+  --c-surface: 40 18 36;
+  --c-raised: 58 26 50;
+  --c-line: 100 52 84;
+  --c-ink: 255 238 232;
+  --c-muted: 214 170 175;
+  --c-accent: 255 138 76;
+  --c-accent-fg: 26 12 24;
+  --c-pop: 255 94 150;
+  --c-ok: 130 226 150;
+  --c-bad: 255 110 110;
+  --c-warn: 255 214 102;
+}
+
+/* Unlocked by the Konami code. */
+[data-theme='retro'] {
+  color-scheme: dark;
+  --c-bg: 0 8 0;
+  --c-surface: 4 20 4;
+  --c-raised: 8 34 8;
+  --c-line: 20 100 20;
+  --c-ink: 140 255 140;
+  --c-muted: 90 200 90;
+  --c-accent: 60 255 60;
+  --c-accent-fg: 0 8 0;
+  --c-pop: 255 176 0;
+  --c-ok: 60 255 60;
+  --c-bad: 255 80 60;
+  --c-warn: 255 176 0;
+}
+
+@layer base {
+  html {
+    @apply bg-bg font-sans text-ink antialiased;
+  }
+  body {
+    @apply min-h-screen;
+    background-image:
+      radial-gradient(60rem 30rem at 85% -10%, rgb(var(--c-accent) / 0.14), transparent 60%),
+      radial-gradient(40rem 24rem at -10% 10%, rgb(var(--c-pop) / 0.1), transparent 60%);
+    background-attachment: fixed;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+  ::selection {
+    background: rgb(var(--c-accent) / 0.35);
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-extrabold tracking-tight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
