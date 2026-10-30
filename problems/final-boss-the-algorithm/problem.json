@@ -1,0 +1,11 @@
+{
+  "slug": "final-boss-the-algorithm",
+  "title": "Final Boss: The Algorithm",
+  "difficulty": "hard",
+  "xp": 250,
+  "tags": ["dynamic-programming", "strings"],
+  "timeLimitMs": 4000,
+  "fnName": "editDistance",
+  "flavor": "The Algorithm has autocorrected your caption into something unrecognisable. How many edits to get it back?",
+  "statement": "The feed's autocorrect rewrote your caption `a` into `b`. To undo it you can make **single-character edits** to `a`. Each of these costs exactly one edit:\n\n- **insert** one character anywhere,\n- **delete** one character,\n- **replace** one character with a different one.\n\nReturn the **minimum number of edits** needed to turn `a` into `b`.\n\n### Constraints\n\n- `0 <= a.length, b.length <= 500`\n- `a` and `b` contain printable ASCII characters only\n\n### Examples\n\n```\na = \"horse\", b = \"ros\"\nanswer = 3\n  horse -> rorse   (replace 'h' with 'r')\n  rorse -> rose    (delete 'r')\n  rose  -> ros     (delete 'e')\n\na = \"intention\", b = \"execution\"\nanswer = 5\n\na = \"same\", b = \"same\"\nanswer = 0\n\na = \"\", b = \"abc\"\nanswer = 3        (three insertions)\n```\n\n### Edge cases\n\n- Either string can be empty. The answer is then the length of the other string.\n- Identical strings need `0` edits.\n- A naive recursion tries three branches per character and is far too slow at length 500. Remember sub-answers instead of recomputing them."
+}

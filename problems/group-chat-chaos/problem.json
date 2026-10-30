@@ -1,0 +1,11 @@
+{
+  "slug": "group-chat-chaos",
+  "title": "Group Chat Chaos",
+  "difficulty": "easy",
+  "xp": 60,
+  "tags": ["stack", "strings"],
+  "timeLimitMs": 2000,
+  "fnName": "isBalanced",
+  "flavor": "Someone opened a parenthetical in the group chat and never closed it. Again.",
+  "statement": "Your group chat loves nested asides: `(like this [and this {and this}])`. A message is **balanced** if every opening bracket `(`, `[` or `{` is closed by the matching bracket of the **same kind**, and brackets close in the correct order (the most recently opened one closes first).\n\nGiven a string `s`, return `true` if the brackets are balanced and `false` otherwise. All other characters (letters, spaces, punctuation) are ignored.\n\n### Constraints\n\n- `0 <= s.length <= 10000`\n- `s` contains printable ASCII characters only\n\n### Examples\n\n```\ns = \"()[]{}\"\nanswer = true\n\ns = \"lol (ok [fine] {sure})\"\nanswer = true\n\ns = \"(]\"\nanswer = false    (wrong kind of closer)\n\ns = \"\"\nanswer = true     (no brackets, nothing unbalanced)\n```\n\n### Edge cases\n\n- A closing bracket with nothing open, like `\")(\"`, is **not** balanced.\n- `\"([)]\"` is not balanced: the brackets cross instead of nesting.\n- A string that ends with something still open, like `\"(\"`, is not balanced."
+}

@@ -1,0 +1,11 @@
+{
+  "slug": "doomscroll-detector",
+  "title": "Doomscroll Detector",
+  "difficulty": "medium",
+  "xp": 120,
+  "tags": ["strings", "sliding-window", "hashing"],
+  "timeLimitMs": 2000,
+  "fnName": "longestFreshStretch",
+  "flavor": "Every post is a character. How long can you scroll before seeing a repeat?",
+  "statement": "Your feed is a string `s`, where each character is a kind of post. A stretch of the feed is **fresh** if it contains **no repeated character**.\n\nReturn the length of the **longest fresh contiguous substring** of `s`.\n\n### Constraints\n\n- `0 <= s.length <= 20000`\n- `s` contains printable ASCII characters only (letters, digits, symbols, spaces)\n\n### Examples\n\n```\ns = \"abcabcbb\"\nanswer = 3        (\"abc\")\n\ns = \"bbbbb\"\nanswer = 1        (\"b\")\n\ns = \"pwwkew\"\nanswer = 3        (\"wke\"; note \"pwke\" is not contiguous)\n\ns = \"\"\nanswer = 0\n```\n\n### Edge cases\n\n- The answer is a **length**, not the substring itself.\n- The substring must be contiguous. A subsequence like `\"pwke\"` in `\"pwwkew\"` does not count.\n- An empty string gives `0`."
+}

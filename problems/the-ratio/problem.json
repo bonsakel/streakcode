@@ -1,0 +1,11 @@
+{
+  "slug": "the-ratio",
+  "title": "The Ratio",
+  "difficulty": "medium",
+  "xp": 130,
+  "tags": ["binary-search", "arrays"],
+  "timeLimitMs": 3000,
+  "fnName": "minScrollSpeed",
+  "flavor": "You have a fixed number of hours to read every thread. How slow can you scroll and still win?",
+  "statement": "There are `piles.length` comment threads, and thread `i` has `piles[i]` comments. You have exactly `hours` hours to read them all.\n\nYou pick an integer **reading speed** `k` (comments per hour). Each hour you pick **one** thread and read up to `k` comments from it. If the thread has fewer than `k` comments left, you finish it and **waste the rest of that hour** (you don't start another thread until the next hour).\n\nReturn the **minimum integer `k`** such that you can read every thread within `hours` hours.\n\n### Constraints\n\n- `1 <= piles.length <= 10000`\n- `piles.length <= hours <= 1000000000`\n- `1 <= piles[i] <= 1000000000`\n\n### Examples\n\n```\npiles = [3, 6, 7, 11], hours = 8\nanswer = 4        (4 per hour: 1 + 2 + 2 + 3 = 8 hours)\n\npiles = [30, 11, 23, 4, 20], hours = 5\nanswer = 30       (one hour per thread, so speed must cover the biggest)\n\npiles = [30, 11, 23, 4, 20], hours = 6\nanswer = 23\n```\n\n### Edge cases\n\n- A thread of `p` comments at speed `k` takes `ceil(p / k)` hours.\n- Because `hours >= piles.length`, a valid speed always exists (`max(piles)` works).\n- Values go up to a billion, so trying every speed one by one will time out."
+}

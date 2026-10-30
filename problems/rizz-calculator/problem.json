@@ -1,0 +1,11 @@
+{
+  "slug": "rizz-calculator",
+  "title": "Rizz Calculator",
+  "difficulty": "easy",
+  "xp": 50,
+  "tags": ["arrays", "hashing"],
+  "timeLimitMs": 2000,
+  "fnName": "rizzCalculator",
+  "flavor": "Your group chat keeps score. Only the one-of-a-kind moments count.",
+  "statement": "Your friends keep a running scoreboard of everyone's \"rizz\" after each hangout. Scores can be positive, negative or zero. A score only counts if **nobody else got the exact same number**: duplicated scores cancel out as a rehearsed bit.\n\nGiven an array `scores`, return the **sum of the values that appear exactly once**.\n\n### Constraints\n\n- `0 <= scores.length <= 100000`\n- `-1000 <= scores[i] <= 1000`\n\n### Examples\n\n```\nscores = [1, 2, 3, 2]\nanswer = 4        (1 and 3 appear once; 2 appears twice)\n\nscores = [5, 5, 5]\nanswer = 0        (nothing appears exactly once)\n\nscores = [-4, 10, -4, 7, 10, 1]\nanswer = 8        (7 and 1 appear once)\n\nscores = []\nanswer = 0\n```\n\n### Edge cases\n\n- An empty array sums to `0`.\n- A value that appears three times does **not** count, only a value that appears exactly once."
+}

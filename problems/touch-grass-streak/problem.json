@@ -1,0 +1,11 @@
+{
+  "slug": "touch-grass-streak",
+  "title": "Touch Grass Streak",
+  "difficulty": "easy",
+  "xp": 60,
+  "tags": ["arrays", "hashing"],
+  "timeLimitMs": 2000,
+  "fnName": "longestStreak",
+  "flavor": "Your outdoor log is a mess. How many days in a row did you actually go outside?",
+  "statement": "You logged the **day numbers** on which you went outside, but the log is unsorted and has duplicates (you logged some days twice). Day numbers are integers, and day `n + 1` comes right after day `n`.\n\nReturn the length of the **longest run of consecutive days** in the log.\n\n### Constraints\n\n- `0 <= days.length <= 5000`\n- `-1000000 <= days[i] <= 1000000`\n\n### Examples\n\n```\ndays = [100, 4, 200, 1, 3, 2]\nanswer = 4        (days 1, 2, 3, 4)\n\ndays = [5, 5, 5]\nanswer = 1        (duplicates don't extend a streak)\n\ndays = [9, 1, 4, 7, 3, -1, 0, 5, 8, -1, 6]\nanswer = 7        (days 3 through 9; day 2 is missing, so -1, 0, 1 is only 3)\n\ndays = []\nanswer = 0\n```\n\n### Edge cases\n\n- An empty log has a streak of `0`.\n- Duplicates must not be counted twice."
+}

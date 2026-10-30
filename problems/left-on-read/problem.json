@@ -1,0 +1,11 @@
+{
+  "slug": "left-on-read",
+  "title": "Left on Read",
+  "difficulty": "easy",
+  "xp": 50,
+  "tags": ["arrays", "hashing"],
+  "timeLimitMs": 2000,
+  "fnName": "leftOnRead",
+  "flavor": "Somewhere in that chat is the first message nobody answered. Find it.",
+  "statement": "You sent a bunch of messages, each with a unique positive integer `id`, listed in the order you sent them. Some of them got a reply. You have a list of the ids that were replied to (in any order, possibly with repeats, since people double-reply).\n\nReturn the `id` of the **first message you sent that never got a reply**. If every message got a reply, return `-1`.\n\n### Constraints\n\n- `1 <= sent.length <= 5000`\n- All ids in `sent` are distinct, and `1 <= id <= 100000`\n- `0 <= replied.length <= 20000`; every value in `replied` is an id from `sent`\n\n### Examples\n\n```\nsent = [1, 2, 3, 4], replied = [1, 2, 4]\nanswer = 3\n\nsent = [10, 20, 30], replied = [30, 20, 10]\nanswer = -1       (everyone replied)\n\nsent = [7, 8, 9], replied = []\nanswer = 7        (the very first one got ghosted)\n```\n\n### Edge cases\n\n- \"First\" means first in `sent` order, not the smallest id.\n- `replied` may be empty."
+}

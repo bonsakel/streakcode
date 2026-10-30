@@ -43,3 +43,17 @@ Ambiguities in `PROJECT_SPEC.md` and how they were resolved (simplest option tha
 - **Progress.** The worker streams the assets (warming the HTTP cache) and reports `downloading` -> `starting` -> `ready`. Startup timeout is inactivity-based (30 s).
 - **Sandbox lockdown** runs only after Pyodide boots, because boot needs fetch. `import js` network calls are blocked afterwards.
 - **Node tests** load Pyodide from `node_modules` in a `worker_threads` worker, using the same core as the browser.
+
+## Phase 4: Problem system
+
+- **Index by `import.meta.glob`, not a generated file.** Vite resolves the globs at build time, so the "build-time index" is the bundle itself: `problem.json` files are eager (lists, cards, search), everything else is a lazy chunk per file. No generated file to forget to commit.
+- **Reference solutions never reach the browser.** The glob excludes `solution.*`. Hidden tests do ship (it is a static site); the README already says the judge is not a security boundary.
+- **One parser for browser and CI.** `parseProblem` turns a folder's files into a validated `Problem`, so both agree on what is well formed. It collects every problem in a folder instead of stopping at the first.
+- **Folder name must equal slug; one function name for every language.** Python keeps camelCase `fnName`. Simplest model; a per-language name can be added later if needed.
+- **Hints are one file** (`hints.md`, exactly 3, split on `---`).
+- **Starters return `null`/`None`** so they lose with Wrong Answer rather than crash. Validation enforces "no crash, not already correct" in all three languages.
+- **TypeScript is validated by running `solution.js` as TypeScript**, which exercises the TS pipeline without a third solution file.
+- **Test data comes from independent brute force** (`scripts/author/generate-tests.py`), not from the reference solutions.
+- **XP:** easy 50-60, medium 120-130, hard 250. Tunable later without touching code.
+- **`problems/` is excluded from ESLint** (it is sample code for users, with intentionally unused parameters) but still formatted by Prettier, except `tests.json`.
+- **`validate-problems` runs under `tsx`** so it can import the real judge sources; `tsx` is a devDependency.
