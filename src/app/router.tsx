@@ -9,6 +9,7 @@ const Daily = lazy(() => import('./pages/Daily'));
 const Boss = lazy(() => import('./pages/Boss'));
 const Profile = lazy(() => import('./pages/Profile'));
 const About = lazy(() => import('./pages/About'));
+const JudgeLab = lazy(() => import('./pages/JudgeLab'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 export const routes: RouteObject[] = [
@@ -22,6 +23,7 @@ export const routes: RouteObject[] = [
       { path: '/boss', element: <Boss /> },
       { path: '/profile', element: <Profile /> },
       { path: '/about', element: <About /> },
+      { path: '/judge-lab', element: <JudgeLab /> },
       { path: '*', element: <NotFound /> },
     ],
   },
