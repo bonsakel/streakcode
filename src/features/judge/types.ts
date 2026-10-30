@@ -1,3 +1,5 @@
+import type { RuntimeProgress } from './protocol';
+
 export type Language = 'javascript' | 'typescript' | 'python';
 
 export interface TestCase {
@@ -48,6 +50,8 @@ export interface RunOptions {
    */
   checker?: string;
   signal?: AbortSignal;
+  /** Called while a runtime (e.g. Pyodide) is still starting up, before the first test runs. */
+  onProgress?: (progress: RuntimeProgress) => void;
 }
 
 export interface Judge {

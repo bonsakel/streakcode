@@ -24,7 +24,7 @@ const run = (opts: Partial<RunOptions> & Pick<RunOptions, 'code'>) =>
   );
 
 describe.each<Language>(['javascript', 'typescript'])('conformance: %s', (language) => {
-  it.each(CONFORMANCE_CASES)('$name', async (c) => {
+  it.each(CONFORMANCE_CASES.filter((c) => c.code[language] !== undefined))('$name', async (c) => {
     const { results, verdict } = await runConformanceCase(judge, language, c);
     expect(results.map((r) => r.status)).toEqual(c.expectStatuses);
     expect(verdict.kind).toBe(c.expectVerdict);
@@ -287,9 +287,18 @@ describe('sandbox hygiene', () => {
 
 describe('judge lifecycle', () => {
   it('rejects languages without a runtime', async () => {
-    await expect(run({ language: 'python', code: 'def add(a, b): return a + b' })).rejects.toThrow(
-      /No runtime is available for python/,
-    );
+    const empty = createJudge({});
+    await expect(
+      collectResults(
+        empty.runTests({
+          language: 'python',
+          code: 'def add(a, b): return a + b',
+          fnName: 'add',
+          tests: [{ input: [1, 2], expected: 3 }],
+          timeLimitMs: 1000,
+        }),
+      ),
+    ).rejects.toThrow(/No runtime is available for python/);
   });
 
   it('rejects a non-positive time limit', async () => {
@@ -364,7 +373,7 @@ describe('worker failures', () => {
       onerror: null,
     });
     const stuck = createJudge({
-      javascript: { prepare: (c) => c, runner: new WorkerRunner(silent, 50) },
+      javascript: { prepare: (c) => c, runner: new WorkerRunner(silent, { startupTimeoutMs: 50 }) },
     });
     await expect(collectResults(stuck.runTests(baseOpts))).rejects.toThrow(
       /took too long to start/,

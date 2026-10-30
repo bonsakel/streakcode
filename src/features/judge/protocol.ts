@@ -34,8 +34,20 @@ export type CaseOutcome =
 
 export type WorkerRequest = { type: 'run' } & CaseRequest;
 
+/** Coarse runtime start-up stages, reported so the UI can show a loading state. */
+export type RuntimeStage = 'downloading' | 'starting' | 'ready';
+
+export interface RuntimeProgress {
+  stage: RuntimeStage;
+  /** 0..1 while the size is known, otherwise undefined. */
+  fraction?: number | undefined;
+}
+
 export type WorkerResponse =
-  { type: 'ready' } | { type: 'result'; id: number; outcome: CaseOutcome };
+  | { type: 'ready' }
+  | ({ type: 'progress' } & RuntimeProgress)
+  | { type: 'fatal'; reason: string }
+  | { type: 'result'; id: number; outcome: CaseOutcome };
 
 /** Minimal worker surface so browser Workers and Node worker_threads are interchangeable. */
 export interface WorkerHandle {

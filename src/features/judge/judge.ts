@@ -138,6 +138,7 @@ export function createJudge(backends: Partial<Record<Language, Backend>>): Judge
           },
           opts.timeLimitMs,
           opts.signal,
+          opts.onProgress,
         );
         const result = fromRunner(index, test, run, opts.timeLimitMs);
         halted = result.status === 'time_limit_exceeded' || result.status === 'compile_error';

@@ -18,3 +18,7 @@ The judge lives in `src/features/judge`. Try it at `/judge-lab` while `npm run d
 ## License
 
 MIT
+
+## Python runtime
+
+Python runs via [Pyodide](https://pyodide.org) (self-hosted, about 12 MB, downloaded once on first Python run and then cached). `npm run dev` and `npm run build` copy it into `public/` automatically. Infinite loops are stopped by restarting the worker, so the first run after a time-out may be a little slower.

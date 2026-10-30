@@ -2,6 +2,7 @@ import { JudgeInternalError } from './types';
 import type {
   CaseOutcome,
   CaseRequest,
+  RuntimeProgress,
   WorkerFactory,
   WorkerHandle,
   WorkerResponse,
@@ -18,9 +19,20 @@ export interface CaseRunner {
     request: Omit<CaseRequest, 'id'>,
     timeoutMs: number,
     signal?: AbortSignal,
+    onProgress?: (progress: RuntimeProgress) => void,
   ): Promise<RunnerResult>;
   warmUp(): void;
   dispose(): void;
+}
+
+export interface WorkerRunnerOptions {
+  /**
+   * Longest silence (no progress message) tolerated while a worker starts up. Runtimes that
+   * download assets report progress, which keeps resetting this clock.
+   */
+  startupTimeoutMs?: number;
+  /** After a timeout or abort, start the replacement worker immediately instead of on next use. */
+  respawnEagerly?: boolean;
 }
 
 /** Extra wall time on top of the limit for message passing before the worker is killed. */
@@ -30,7 +42,10 @@ const DEFAULT_STARTUP_TIMEOUT_MS = 15_000;
 interface Slot {
   handle: WorkerHandle;
   ready: Promise<void>;
+  isReady: boolean;
   dead: boolean;
+  lastProgress: RuntimeProgress | null;
+  progressListeners: Set<(progress: RuntimeProgress) => void>;
   onResult: ((message: Extract<WorkerResponse, { type: 'result' }>) => void) | null;
   onCrash: ((reason: string) => void) | null;
 }
@@ -48,11 +63,16 @@ export class WorkerRunner implements CaseRunner {
   private queue: Promise<unknown> = Promise.resolve();
   private nextId = 1;
   private disposed = false;
+  private readonly startupTimeoutMs: number;
+  private readonly respawnEagerly: boolean;
 
   constructor(
     private readonly factory: WorkerFactory,
-    private readonly startupTimeoutMs = DEFAULT_STARTUP_TIMEOUT_MS,
-  ) {}
+    options: WorkerRunnerOptions = {},
+  ) {
+    this.startupTimeoutMs = options.startupTimeoutMs ?? DEFAULT_STARTUP_TIMEOUT_MS;
+    this.respawnEagerly = options.respawnEagerly ?? false;
+  }
 
   warmUp(): void {
     if (this.disposed) return;
@@ -63,8 +83,9 @@ export class WorkerRunner implements CaseRunner {
     request: Omit<CaseRequest, 'id'>,
     timeoutMs: number,
     signal?: AbortSignal,
+    onProgress?: (progress: RuntimeProgress) => void,
   ): Promise<RunnerResult> {
-    const job = this.queue.then(() => this.runNow(request, timeoutMs, signal));
+    const job = this.queue.then(() => this.runNow(request, timeoutMs, signal, onProgress));
     this.queue = job.catch(() => undefined);
     return job;
   }
@@ -84,17 +105,40 @@ export class WorkerRunner implements CaseRunner {
       resolveReady = resolve;
       rejectReady = reject;
     });
-    const slot: Slot = { handle, ready, dead: false, onResult: null, onCrash: null };
-
-    handle.onmessage = (message) => {
-      if (message.type === 'ready') resolveReady();
-      else slot.onResult?.(message);
+    const slot: Slot = {
+      handle,
+      ready,
+      isReady: false,
+      dead: false,
+      lastProgress: null,
+      progressListeners: new Set(),
+      onResult: null,
+      onCrash: null,
     };
-    handle.onerror = (reason) => {
+
+    const fail = (reason: string) => {
+      const wasReady = slot.isReady;
       this.discard(slot);
-      rejectReady(new JudgeInternalError(`The code runner failed to start: ${reason}`));
+      if (!wasReady) {
+        rejectReady(new JudgeInternalError(`The code runner failed to start: ${reason}`));
+      }
       slot.onCrash?.(reason);
     };
+
+    handle.onmessage = (message) => {
+      if (message.type === 'ready') {
+        slot.isReady = true;
+        resolveReady();
+      } else if (message.type === 'progress') {
+        slot.lastProgress = { stage: message.stage, fraction: message.fraction };
+        for (const listener of slot.progressListeners) listener(slot.lastProgress);
+      } else if (message.type === 'fatal') {
+        fail(message.reason);
+      } else {
+        slot.onResult?.(message);
+      }
+    };
+    handle.onerror = fail;
     this.slot = slot;
     return slot;
   }
@@ -112,18 +156,36 @@ export class WorkerRunner implements CaseRunner {
     if (this.slot === slot) this.slot = null;
   }
 
-  private async awaitReady(slot: Slot): Promise<void> {
+  private async awaitReady(
+    slot: Slot,
+    onProgress?: (progress: RuntimeProgress) => void,
+  ): Promise<void> {
+    if (slot.isReady) return;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let rejectStartup!: (error: Error) => void;
     const startupTimeout = new Promise<never>((_, reject) => {
+      rejectStartup = reject;
+    });
+    const arm = () => {
+      clearTimeout(timer);
       timer = setTimeout(() => {
         this.discard(slot);
-        reject(new JudgeInternalError('The code runner took too long to start.'));
+        rejectStartup(new JudgeInternalError('The code runner took too long to start.'));
       }, this.startupTimeoutMs);
-    });
+    };
+    const listener = (progress: RuntimeProgress) => {
+      arm();
+      onProgress?.(progress);
+    };
+
+    slot.progressListeners.add(listener);
+    if (slot.lastProgress) onProgress?.(slot.lastProgress);
+    arm();
     try {
       await Promise.race([slot.ready, startupTimeout]);
     } finally {
       clearTimeout(timer);
+      slot.progressListeners.delete(listener);
     }
   }
 
@@ -131,12 +193,13 @@ export class WorkerRunner implements CaseRunner {
     request: Omit<CaseRequest, 'id'>,
     timeoutMs: number,
     signal?: AbortSignal,
+    onProgress?: (progress: RuntimeProgress) => void,
   ): Promise<RunnerResult> {
     if (this.disposed) throw new JudgeInternalError('The judge was disposed.');
     if (signal?.aborted) throw abortError();
 
     const slot = this.ensureSlot();
-    await this.awaitReady(slot);
+    await this.awaitReady(slot, onProgress);
     if (signal?.aborted) throw abortError();
 
     const id = this.nextId++;
@@ -151,12 +214,16 @@ export class WorkerRunner implements CaseRunner {
         slot.onCrash = null;
         finish();
       };
-      const onAbort = () => {
+      const kill = () => {
         this.discard(slot);
+        if (this.respawnEagerly) this.warmUp();
+      };
+      const onAbort = () => {
+        kill();
         settle(() => reject(abortError()));
       };
       const timer = setTimeout(() => {
-        this.discard(slot);
+        kill();
         settle(() => resolve({ kind: 'timeout' }));
       }, timeoutMs + GRACE_MS);
 

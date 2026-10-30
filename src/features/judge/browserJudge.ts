@@ -28,7 +28,15 @@ export function getJudge(): Judge {
     const jsRunner = new WorkerRunner(() =>
       wrapBrowserWorker(new Worker(new URL('./js.worker.ts', import.meta.url), { type: 'module' })),
     );
+    const pyRunner = new WorkerRunner(
+      () =>
+        wrapBrowserWorker(
+          new Worker(new URL('./py.worker.ts', import.meta.url), { type: 'module' }),
+        ),
+      { startupTimeoutMs: 30_000, respawnEagerly: true },
+    );
     instance = createJudge({
+      python: { prepare: (code) => code, runner: pyRunner },
       javascript: { prepare: (code) => code, runner: jsRunner },
       typescript: { prepare: transpileTypeScript, runner: jsRunner },
     });

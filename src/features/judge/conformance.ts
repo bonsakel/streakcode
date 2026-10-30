@@ -25,7 +25,7 @@ const add: TestCase[] = [
  * Behaviour every language backend must agree on. Phase 3 adds Python snippets to these same
  * cases, so JS/Python parity is enforced by the same assertions.
  */
-export const CONFORMANCE_CASES: ConformanceCase[] = [
+const BASE_CASES: ConformanceCase[] = [
   {
     name: 'accepts a correct solution',
     code: {
@@ -173,6 +173,46 @@ export const CONFORMANCE_CASES: ConformanceCase[] = [
     expectStatuses: ['passed'],
   },
 ];
+
+/** Python twins of the cases above, keyed by case name. The missing-return case has none: None is null. */
+const PYTHON: Record<string, { code: string; checker?: string }> = {
+  'accepts a correct solution': { code: 'def add(a, b):\n    return a + b' },
+  'reports wrong answers without hiding later results': {
+    code: 'def add(a, b):\n    return a - b',
+  },
+  'maps a thrown error to a runtime error and keeps going': {
+    code: 'def add(a, b):\n    if a < 0:\n        raise ValueError("negative")\n    return a + b',
+  },
+  'turns an infinite loop into a time limit and skips the rest': {
+    code: 'def add(a, b):\n    while True:\n        pass',
+  },
+  'compares floats exactly unless epsilon is given': { code: 'def f(a, b):\n    return a + b' },
+  'accepts floats within epsilon': { code: 'def f(a, b):\n    return a + b' },
+  'deep-compares nested arrays and objects': {
+    code: 'def f(n):\n    return {"list": [n, [n + 1]], "ok": True}',
+  },
+  'uses a custom checker for any-valid-answer problems': {
+    code: 'def pair(n):\n    return [n - 1, 1]',
+    checker: 'def checker(input, got, expected):\n    return got[0] + got[1] == input[0]',
+  },
+  'reports a syntax error as a compile error and skips the rest': {
+    code: 'def add(a, b):\n    return a + ',
+  },
+  'reports a missing function as a runtime error': { code: 'def something_else():\n    return 1' },
+  'survives a flood of console output': {
+    code: 'def add(a, b):\n    for i in range(200000):\n        print("spam spam spam spam", i)\n    return a + b',
+  },
+};
+
+export const CONFORMANCE_CASES: ConformanceCase[] = BASE_CASES.map((c) => {
+  const py = PYTHON[c.name];
+  if (!py) return c;
+  return {
+    ...c,
+    code: { ...c.code, python: py.code },
+    ...(py.checker ? { checker: { ...c.checker, python: py.checker } } : {}),
+  };
+});
 
 export async function runConformanceCase(judge: Judge, language: Language, c: ConformanceCase) {
   const code = c.code[language];

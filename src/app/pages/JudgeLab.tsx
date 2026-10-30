@@ -2,11 +2,13 @@ import { useRef, useState } from 'react';
 import { Badge, type Tint } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { runtimeProgressText } from '@/features/copy/runtime';
 import { getJudge } from '@/features/judge/browserJudge';
+import type { RuntimeProgress } from '@/features/judge/protocol';
 import type { Language, TestCase, TestResult, TestStatus, Verdict } from '@/features/judge/types';
 import { computeVerdict } from '@/features/judge/verdict';
 
-type LabLanguage = Exclude<Language, 'python'>;
+type LabLanguage = Language;
 
 const TESTS: TestCase[] = [
   { input: [1, 2], expected: 3 },
@@ -26,11 +28,16 @@ const SAMPLES: Record<LabLanguage, string> = {
   return a + b;
 }
 `,
+  python: `def add(a, b):
+    print("adding", a, b)
+    return a + b
+`,
 };
 
 const LOOP: Record<LabLanguage, string> = {
   javascript: 'function add(a, b) {\n  while (true) {}\n}\n',
   typescript: 'function add(a: number, b: number): number {\n  while (true) {}\n}\n',
+  python: 'def add(a, b):\n    while True:\n        pass\n',
 };
 
 const STATUS_TINT: Record<TestStatus, Tint> = {
@@ -99,6 +106,7 @@ export default function JudgeLab() {
   const [results, setResults] = useState<TestResult[]>([]);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState<RuntimeProgress | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const controller = useRef<AbortController | null>(null);
 
@@ -110,6 +118,7 @@ export default function JudgeLab() {
     setResults([]);
     setVerdict(null);
     setFailure(null);
+    setProgress(null);
     const seen: TestResult[] = [];
     try {
       for await (const result of getJudge().runTests({
@@ -120,6 +129,7 @@ export default function JudgeLab() {
         timeLimitMs: 1000,
         epsilon: 1e-9,
         signal: abort.signal,
+        onProgress: setProgress,
       })) {
         seen.push(result);
         setResults([...seen]);
@@ -130,7 +140,10 @@ export default function JudgeLab() {
         setFailure(e instanceof Error ? e.message : String(e));
       }
     } finally {
-      if (controller.current === abort) setRunning(false);
+      if (controller.current === abort) {
+        setRunning(false);
+        setProgress(null);
+      }
     }
   };
 
@@ -159,6 +172,7 @@ export default function JudgeLab() {
           >
             <option value="javascript">JavaScript</option>
             <option value="typescript">TypeScript</option>
+            <option value="python">Python</option>
           </select>
           <Button size="sm" variant="ghost" onClick={() => setCode(LOOP[language])}>
             Load infinite loop
@@ -180,6 +194,11 @@ export default function JudgeLab() {
         </Button>
       </Card>
 
+      {running && progress && progress.stage !== 'ready' && (
+        <p role="status" className="text-sm text-muted">
+          {runtimeProgressText(language, progress)}
+        </p>
+      )}
       {failure && (
         <p role="alert" className="text-bad">
           The judge itself broke: {failure}

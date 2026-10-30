@@ -32,3 +32,14 @@ Ambiguities in `PROJECT_SPEC.md` and how they were resolved (simplest option tha
 - **Sandbox hygiene** shadows `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `importScripts`, `Worker`, `SharedWorker`, `BroadcastChannel` and `postMessage` in the worker. This is hygiene, not a security boundary (to be stated in the README).
 - **Conformance table** (`conformance.ts`) lists behaviours every language must agree on. Phase 3 adds Python snippets to the same cases, which is the JS/Python parity test.
 - **`/judge-lab`** is a deliberately plain proof page, not linked from the navbar.
+
+## Phase 3: Python (Pyodide)
+
+- **Comparison stays in JS.** The Python harness returns normalized JSON; `valuesMatch`, `formatValue` and epsilon logic are shared, so parity is structural. Only a user `checker` runs in Python.
+- **None is null.** The JS "missing return is wrong" case has no Python twin; `None` equals `null`.
+- **Async Python functions** are rejected with a `TypeError`.
+- **Time limits.** Pyodide can't be interrupted without SharedArrayBuffer (needs COOP/COEP headers, which static hosts and embeds make awkward). On TLE the worker is terminated and a warm replacement starts immediately in the background.
+- **Self-hosted runtime.** `scripts/copy-pyodide.mjs` (run by `predev`/`prebuild`) copies Pyodide into the gitignored `public/pyodide-<version>/`; no CDN. `public/_headers` makes it immutable-cacheable.
+- **Progress.** The worker streams the assets (warming the HTTP cache) and reports `downloading` -> `starting` -> `ready`. Startup timeout is inactivity-based (30 s).
+- **Sandbox lockdown** runs only after Pyodide boots, because boot needs fetch. `import js` network calls are blocked afterwards.
+- **Node tests** load Pyodide from `node_modules` in a `worker_threads` worker, using the same core as the browser.
