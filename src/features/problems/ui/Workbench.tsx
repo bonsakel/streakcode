@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useId, useEffect, useMemo, useRef, useState } from 'react';
 import { Badge } from '@/components/Badge';
 import { Card } from '@/components/Card';
 import { Tabs } from '@/components/Tabs';
@@ -45,6 +45,7 @@ export function Workbench({
   const clearDraft = useWorkspace((s) => s.clearDraft);
   const solved = useProgress((s) => Boolean(s.solved[slug]));
 
+  const tabsId = useId();
   const [tab, setTab] = useState('statement');
   const [code, setCode] = useState(
     () => useWorkspace.getState().drafts[draftKey(slug, language)] ?? problem.starters[language],
@@ -116,8 +117,8 @@ export function Workbench({
           ))}
         </div>
       </div>
-      <Tabs items={TABS} value={tab} onChange={setTab} label="Problem sections" />
-      <div role="tabpanel" aria-label={TABS.find((t) => t.id === tab)?.label}>
+      <Tabs items={TABS} value={tab} onChange={setTab} label="Problem sections" idBase={tabsId} />
+      <div role="tabpanel" id={`${tabsId}-panel-${tab}`} aria-labelledby={`${tabsId}-tab-${tab}`}>
         {tab === 'statement' && <Markdown>{problem.statement}</Markdown>}
         {tab === 'hints' && <HintsPanel slug={slug} hints={problem.hints} />}
         {tab === 'editorial' && <EditorialPanel slug={slug} editorial={problem.editorial} />}

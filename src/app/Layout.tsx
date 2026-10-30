@@ -3,7 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
 import { ToastViewport } from '@/components/Toast';
 import { toast } from '@/components/toastStore';
-import { CommandPalette } from '@/features/palette/CommandPalette';
+import { PaletteHost } from '@/features/palette/PaletteHost';
 import { useApplyTheme } from '@/features/theme/useApplyTheme';
 import { useKonami } from '@/features/theme/useKonami';
 import { useSettings } from '@/store/settings';
@@ -49,7 +49,7 @@ export function Layout() {
       </main>
       <Footer />
       <ToastViewport />
-      <CommandPalette />
+      <PaletteHost />
     </div>
   );
 }

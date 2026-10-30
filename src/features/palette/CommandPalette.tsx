@@ -159,17 +159,6 @@ export function CommandPalette() {
   const setOpen = usePalette((s) => s.setOpen);
   const close = useMemo(() => () => setOpen(false), [setOpen]);
 
-  useEffect(() => {
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        usePalette.getState().toggle();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
   return (
     <Modal open={open} onClose={close} title="Command palette" wide>
       <PaletteBody close={close} />

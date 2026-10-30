@@ -101,10 +101,10 @@ export function renderCard(canvas: HTMLCanvasElement, model: CardModel): void {
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = c.ink;
   ctx.font = `800 40px ${DISPLAY}`;
-  ctx.fillText('Skill', 200, 128);
-  const skillWidth = ctx.measureText('Skill').width;
+  ctx.fillText('Streak', 200, 128);
+  const streakWidth = ctx.measureText('Streak').width;
   ctx.fillStyle = c.accent;
-  ctx.fillText('Issue', 200 + skillWidth, 128);
+  ctx.fillText('code', 200 + streakWidth, 128);
 
   const pill = model.headline;
   ctx.font = `800 30px ${DISPLAY}`;

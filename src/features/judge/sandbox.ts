@@ -18,7 +18,7 @@ const BLOCKED_GLOBALS = [
 export function lockDownGlobals(scope: object = globalThis): void {
   for (const name of BLOCKED_GLOBALS) {
     const blocked = function blockedGlobal() {
-      throw new Error(`${name} is disabled in the Skill Issue sandbox.`);
+      throw new Error(`${name} is disabled in the Streakcode sandbox.`);
     };
     try {
       Object.defineProperty(scope, name, {

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Logo } from '@/components/Logo';
+import { HOME_COPY } from '@/features/copy/home';
+import { DeferredHomeSections } from '@/features/home/DeferredHomeSections';
 
 const FEATURES = [
   {
@@ -35,23 +37,24 @@ export default function Home() {
             Free forever · No login · Runs in your browser
           </motion.p>
           <h1 className="text-5xl leading-[1.02] sm:text-7xl">
-            Un-cook yourself.
+            Build your streak.
             <br />
             <span className="text-accent">One problem</span> at a time.
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted">
-            Skill Issue is a code judge with personality. Solve classic problems in JavaScript,
-            TypeScript or Python and get instant verdicts. We roast the code, never you.
+            Streakcode makes it easy to build a coding habit. Solve bite-sized challenges in
+            JavaScript, TypeScript, or Python, and get instant feedback. We roast the code, never
+            you.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/problems">
               <Button size="lg">Start cooking</Button>
             </Link>
-            <Link to="/about">
+            <a href="#try-it">
               <Button size="lg" variant="secondary">
-                How does it work?
+                Try it now
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
         <div className="grid place-items-center">
@@ -72,6 +75,16 @@ export default function Home() {
             <p className="text-muted">{f.body}</p>
           </Card>
         ))}
+      </section>
+
+      <DeferredHomeSections />
+
+      <section className="rounded-2xl border border-line bg-raised px-6 py-10 text-center">
+        <h2 className="text-3xl sm:text-4xl">{HOME_COPY.ctaTitle}</h2>
+        <p className="mx-auto mt-2 max-w-md text-muted">{HOME_COPY.ctaBody}</p>
+        <Link to="/problems" className="mt-6 inline-block">
+          <Button size="lg">Start cooking</Button>
+        </Link>
       </section>
     </div>
   );

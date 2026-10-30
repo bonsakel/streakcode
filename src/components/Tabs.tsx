@@ -13,11 +13,14 @@ interface TabsProps {
   onChange: (id: string) => void;
   label: string;
   className?: string;
+  /** Shared ID prefix for the matching tab panel. */
+  idBase?: string;
 }
 
-/** Accessible tablist with roving focus. Pair panels with `tabPanelProps`. */
-export function Tabs({ items, value, onChange, label, className }: TabsProps) {
-  const base = useId();
+/** Accessible tablist with roving focus. */
+export function Tabs({ items, value, onChange, label, className, idBase }: TabsProps) {
+  const generated = useId();
+  const base = idBase ?? generated;
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
   const enabled = items.filter((i) => !i.disabled);
 
@@ -41,7 +44,7 @@ export function Tabs({ items, value, onChange, label, className }: TabsProps) {
       role="tablist"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className={cn('flex gap-1', className)}
+      className={cn('flex flex-wrap gap-1', className)}
     >
       {items.map((item, i) => {
         const selected = item.id === value;
@@ -59,7 +62,7 @@ export function Tabs({ items, value, onChange, label, className }: TabsProps) {
             disabled={item.disabled}
             onClick={() => onChange(item.id)}
             className={cn(
-              'rounded-lg px-3 py-1.5 text-sm font-semibold transition disabled:opacity-40',
+              'whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-semibold transition disabled:opacity-40',
               selected ? 'bg-accent text-accent-fg' : 'text-muted hover:bg-raised hover:text-ink',
             )}
           >

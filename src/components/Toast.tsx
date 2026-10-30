@@ -35,16 +35,18 @@ function ToastCard({ item }: { item: ToastItem }) {
 export function ToastViewport() {
   const items = useToasts((s) => s.items);
   return (
-    <ul
+    <div
       role="status"
       aria-live="polite"
-      className="pointer-events-none fixed bottom-4 right-4 z-[60] flex max-w-sm flex-col gap-2"
+      className="pointer-events-none fixed bottom-4 right-4 z-[60] max-w-sm"
     >
-      <AnimatePresence>
-        {items.map((item) => (
-          <ToastCard key={item.id} item={item} />
-        ))}
-      </AnimatePresence>
-    </ul>
+      <ul className="flex flex-col gap-2">
+        <AnimatePresence>
+          {items.map((item) => (
+            <ToastCard key={item.id} item={item} />
+          ))}
+        </AnimatePresence>
+      </ul>
+    </div>
   );
 }

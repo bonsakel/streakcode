@@ -52,7 +52,7 @@ export const TAUNTS: Record<Tone, Record<TauntKey, readonly string[]>> = {
       'Defeated. Tell the other bosses I tripped.',
     ],
     lose: [
-      'Time is up. Skill issue, and I say that lovingly.',
+      'Time is up. That timer had main-character energy. I say that lovingly.',
       'The clock wins. Run it back when your fingers recover.',
     ],
   },

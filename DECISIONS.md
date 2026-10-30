@@ -2,6 +2,20 @@
 
 Ambiguities in `PROJECT_SPEC.md` and how they were resolved (simplest option that stays static, free and login-free).
 
+## Brand update
+
+- The product is now **Streakcode**, with the tagline "Build your streak. Small coding wins, one day at a time."
+- Existing browser-storage keys, the daily challenge seed, and the old export marker remain recognized so current users keep their progress and backups. New exports and downloads use the Streakcode name.
+- The project is published at `https://github.com/bonsakel/streakcode`.
+
+## Phase 9: Landing page and polish
+
+- The homepage demo uses the easy "Left on Read" challenge with a working JavaScript example already loaded. It runs visible tests only and never grants progress or XP. The larger editor is loaded when the demo reaches the viewport.
+- The README is written for first-time visitors and recruiters, with original screenshots from the app and a plain-language "how to use it" guide.
+- The privacy page explains in everyday language what stays in the browser and what happens when someone runs or submits code.
+- The original mascot art is reused for the favicon and install icons; the social preview image is an original static graphic.
+- Axe runs in jsdom for each main route; contrast is checked in a real browser because jsdom cannot measure rendered colors. Problem content headings begin at h2 and the keyboard-scrollable examples are focusable.
+
 ## Phase 1
 
 - **Tailwind v3** (not v4): mature `tailwind.config.ts` theming with CSS variables; no stack change.

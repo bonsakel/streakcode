@@ -12,7 +12,7 @@ describe('share card model', () => {
     expect(shareUrl('https://x.dev/', 'rizz-calculator')).toBe(
       'https://x.dev/problem/rizz-calculator',
     );
-    expect(cardFilename('rizz-calculator')).toBe('skill-issue-rizz-calculator.png');
+    expect(cardFilename('rizz-calculator')).toBe('streakcode-rizz-calculator.png');
   });
   it('builds the model', () => {
     const m = buildCardModel({

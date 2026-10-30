@@ -54,7 +54,7 @@ const LABEL: Record<Mood, string> = {
   sleepy: 'Blobert the mascot, sleepy',
 };
 
-/** Blobert, the Skill Issue blob. Original SVG art; the body color follows the theme. */
+/** Blobert, the Streakcode mascot. Original SVG art; the body color follows the theme. */
 export function Mascot({
   mood = 'idle',
   className = 'h-16 w-16',

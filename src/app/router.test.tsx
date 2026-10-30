@@ -9,14 +9,14 @@ function renderAt(path: string) {
 
 describe('routing shell', () => {
   it.each([
-    ['/', /un-cook yourself/i],
+    ['/', /build your streak/i],
     ['/problems', /problems/i],
     ['/problem/rizz-calculator', /rizz calculator/i],
     ['/problem/not-a-real-one', /no problem called/i],
     ['/daily', /daily challenge/i],
     ['/boss', /boss fight/i],
     ['/profile', /profile/i],
-    ['/about', /about skill issue/i],
+    ['/about', /about streakcode/i],
     ['/nope', /404/i],
   ])('renders %s', async (path, heading) => {
     renderAt(path);

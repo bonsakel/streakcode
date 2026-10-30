@@ -1,6 +1,6 @@
 export function Logo({ className = 'h-8 w-8' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 64" className={className} role="img" aria-label="Skill Issue logo">
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label="Streakcode logo">
       <path d="M20 20l-4-8 9 4M44 20l4-8-9 4" fill="rgb(var(--c-pop))" />
       <path
         d="M12 40c0-12 8-22 20-22s20 10 20 22c0 5-5 7-20 7S12 45 12 40z"

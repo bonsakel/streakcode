@@ -1,8 +1,8 @@
 import { lazy } from 'react';
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { Layout } from './Layout';
+import Home from './pages/Home';
 
-const Home = lazy(() => import('./pages/Home'));
 const Problems = lazy(() => import('./pages/Problems'));
 const ProblemPage = lazy(() => import('./pages/ProblemPage'));
 const Daily = lazy(() => import('./pages/Daily'));

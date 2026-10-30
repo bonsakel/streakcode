@@ -46,10 +46,15 @@ describe('progress export/import', () => {
     for (const bad of [
       'not json',
       '{}',
-      '{"app":"skill-issue","version":1,"progress":{"solved":5}}',
+      '{"app":"streakcode","version":1,"progress":{"solved":5}}',
     ]) {
       expect(importProgress(bad).ok).toBe(false);
     }
     expect(Object.keys(useProgress.getState().solved)).toEqual([slug]);
+  });
+
+  it('imports progress exported under the previous app name', () => {
+    const oldFile = exportProgress().replace('"app": "streakcode"', '"app": "skill-issue"');
+    expect(importProgress(oldFile)).toEqual({ ok: true, solved: 0 });
   });
 });

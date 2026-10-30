@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useSettings } from '@/store/settings';
-import { CommandPalette } from './CommandPalette';
+import { PaletteHost } from './PaletteHost';
 import { usePalette } from './paletteStore';
 
 function Where() {
@@ -13,7 +13,7 @@ const setup = () =>
   render(
     <MemoryRouter>
       <Where />
-      <CommandPalette />
+      <PaletteHost />
     </MemoryRouter>,
   );
 

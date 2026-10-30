@@ -181,7 +181,7 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
   },
   {
     id: 'skill-issue',
-    title: 'Skill Issue (Affectionate)',
+    title: 'Streakcode (Affectionate)',
     description: 'Rack up 10 failed submissions. Every pro has been here.',
     icon: '🫠',
     check: (c) => allSubmissions(c).filter((s) => s.verdict !== 'accepted').length >= 10,

@@ -47,7 +47,7 @@ const progressSchema = z.object({
 });
 
 const exportSchema = z.object({
-  app: z.literal('skill-issue'),
+  app: z.enum(['streakcode', 'skill-issue']),
   version: z.literal(1),
   exportedAt: z.number().optional(),
   handle: z.string().min(1).max(40).optional(),
@@ -68,7 +68,7 @@ export function exportProgress(): string {
     achievements: s.achievements,
   };
   return JSON.stringify(
-    { app: 'skill-issue', version: 1, exportedAt: Date.now(), handle, progress },
+    { app: 'streakcode', version: 1, exportedAt: Date.now(), handle, progress },
     null,
     2,
   );
@@ -86,7 +86,7 @@ export function importProgress(text: string): ImportResult {
   }
   const parsed = exportSchema.safeParse(raw);
   if (!parsed.success) {
-    return { ok: false, error: "That file isn't a Skill Issue export (or it's damaged)." };
+    return { ok: false, error: "That file isn't a Streakcode export (or it's damaged)." };
   }
   const { progress, handle } = parsed.data;
   useProgress.getState().replaceAll({ ...emptyProgress(), ...progress });

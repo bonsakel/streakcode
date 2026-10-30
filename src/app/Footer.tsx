@@ -13,7 +13,7 @@ export function Footer() {
             About &amp; privacy
           </Link>
           <a
-            href="https://github.com/"
+            href="https://github.com/bonsakel/streakcode"
             target="_blank"
             rel="noreferrer noopener"
             className="hover:text-ink"

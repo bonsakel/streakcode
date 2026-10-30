@@ -274,7 +274,7 @@ describe('sandbox hygiene', () => {
       code: `function add() { return new (${name})("http://example.com"); }`,
     });
     expect(r?.status).toBe('runtime_error');
-    expect(r?.error?.message).toContain('disabled in the Skill Issue sandbox');
+    expect(r?.error?.message).toContain('disabled in the Streakcode sandbox');
   });
 
   it('cannot post forged results through postMessage', async () => {

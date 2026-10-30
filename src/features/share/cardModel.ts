@@ -32,7 +32,7 @@ export function shareUrl(origin: string, slug: string): string {
 }
 
 export function cardFilename(slug: string): string {
-  return `skill-issue-${slug}.png`;
+  return `streakcode-${slug}.png`;
 }
 
 export interface CardModel {

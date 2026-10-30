@@ -21,11 +21,11 @@ export function Navbar() {
         <Link
           to="/"
           className="mr-2 flex items-center gap-2 rounded-lg"
-          aria-label="Skill Issue home"
+          aria-label="Streakcode home"
         >
           <Logo />
           <span className="font-display text-lg font-extrabold tracking-tight">
-            Skill<span className="text-accent">Issue</span>
+            Streak<span className="text-accent">code</span>
           </span>
         </Link>
 

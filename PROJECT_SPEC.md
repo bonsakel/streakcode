@@ -1,12 +1,12 @@
-# SKILL ISSUE: a code judge for people who are "cooked" (and want to un-cook)
+# STREAKCODE: a friendly place to practice coding
 
 > Instructions for Claude Code. Read this whole file before writing any code. Build in the phases listed at the bottom, committing after each one. Ask me before deviating from the stack or scope.
 
 ## 0. One-paragraph pitch
 
-**Skill Issue** is a LeetCode-style online judge with personality. You write code in the browser, hit **Run**, and get instant verdicts delivered in Gen Z humor. It has no login, no paid APIs, and nothing to install. A recruiter can open the link and solve a problem within 10 seconds. The goal is to make practicing code feel like a game (XP, streaks, boss fights, achievements, shareable result cards) rather than homework. It should look and feel like a real product, not a tutorial project.
+**Streakcode** is a free online code judge with personality. You write code in the browser, hit **Run**, and get instant feedback. It has no login, no paid APIs, and nothing to install. A recruiter can open the link and try a problem within 10 seconds. The goal is to make practicing code feel like a game (XP, streaks, boss fights, achievements, shareable result cards) rather than homework. It should look and feel like a real product, not a tutorial project.
 
-**Name:** Skill Issue. **Tagline:** "Un-cook yourself. One problem at a time."
+**Name:** Streakcode. **Tagline:** "Build your streak. Small coding wins, one day at a time."
 **Tone:** funny, warm, hype-man energy. The app roasts your code, never you. Never mean, never cringe-forced. Use slang sparingly and keep it readable by non-Gen-Z people (recruiters are in the audience). Include a **Tone toggle**: `Hype` (default), `Roast`, `Professional` (plain verdicts, for people who hate fun).
 
 ---
@@ -65,7 +65,7 @@ Keep bundle size sane: lazy-load Monaco and Pyodide, route-level code splitting.
 
 **Verdicts** (each has a Hype / Roast / Professional message pool; pick randomly from the pool, never the same twice in a row):
 - `Accepted` (e.g. "W. Absolute W." / "Okay, who let you cook?")
-- `Wrong Answer` (e.g. "Close, but the vibes are off." / "Skill issue (temporary)")
+- `Wrong Answer` (e.g. "Close, but the vibes are off." / "A plot twist (temporary)")
 - `Time Limit Exceeded` (e.g. "Your code is still loading... like my motivation.")
 - `Runtime Error` (e.g. "It crashed. We don't talk about it.")
 - `Compile/Syntax Error` (e.g. "That's not code, that's a cry for help.")
@@ -146,7 +146,7 @@ No tracking, no cookies, no third-party scripts. State this in the About page. E
 ## 4. Suggested repo structure
 
 ```
-skill-issue/
+streakcode/
   PROJECT_SPEC.md
   README.md  LICENSE  CONTRIBUTING.md
   problems/                # problem folders (see 3.2)

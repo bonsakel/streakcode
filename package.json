@@ -1,8 +1,8 @@
 {
-  "name": "skill-issue",
+  "name": "streakcode",
   "private": true,
   "version": "0.1.0",
-  "description": "Skill Issue: a login-free, fully static code judge. Un-cook yourself. One problem at a time.",
+  "description": "Streakcode: a free, login-free code judge to build a coding habit.",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -44,6 +44,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.1.2",
     "autoprefixer": "^10.6.2",
+    "axe-core": "^4.14.0",
     "esbuild": "^0.28.2",
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",

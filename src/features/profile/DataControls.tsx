@@ -23,7 +23,7 @@ export function DataControls() {
     if (!file) return;
     setError(null);
     if (file.size > 5_000_000) {
-      setError('That file is huge. Skill Issue exports are much smaller.');
+      setError('That file is huge. Streakcode exports are much smaller.');
       return;
     }
     const result = importProgress(await file.text());
@@ -49,7 +49,7 @@ export function DataControls() {
       <div className="flex flex-wrap gap-2">
         <Button
           variant="secondary"
-          onClick={() => download(`skill-issue-progress-${Date.now()}.json`, exportProgress())}
+          onClick={() => download(`streakcode-progress-${Date.now()}.json`, exportProgress())}
         >
           Export progress
         </Button>
